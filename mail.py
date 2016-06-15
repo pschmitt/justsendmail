@@ -139,6 +139,7 @@ def main():
         smtp_server=args.smtp,
         smtp_port=args.port,
         sender=args.sender,
+        username=args.username,
         password=args.password,
         recipient=args.recipient,
         subject=args.SUBJECT,
