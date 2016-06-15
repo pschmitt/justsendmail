@@ -4,12 +4,12 @@
 
 import argparse
 import logging
-import sys
 from email.mime.text import MIMEText
 from smtplib import SMTP
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEBase import MIMEBase
 from email import Encoders
+import sys
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 def send_mail(sender, recipient, subject, message, attachments=None,
-              smtp_server='smtp.dt.ept.lu', smtp_port=25):
+              smtp_server='smtp.dt.ept.lu', smtp_port=25, tls=True,
+              username=None, password=None):
     logger.debug(
         'Send mail via {}:{} From: {} To: {}'.format(
             smtp_server, smtp_port, sender, recipient
@@ -46,7 +47,12 @@ def send_mail(sender, recipient, subject, message, attachments=None,
 
     logger.debug(msg)
 
-    s = SMTP(smtp_server)
+    s = SMTP(smtp_server, port=smtp_port)
+    if tls:
+        s.starttls()
+    if password:
+        user = username if username else sender
+        s.login(user, password)
     s.sendmail(sender, recipients, msg.as_string())
     s.quit()
 
@@ -69,14 +75,34 @@ def parse_args():
         help='SMTP Server Port'
     )
     parser.add_argument(
+        '--tls',
+        required=False,
+        default=True,
+        action='store_true',
+        help='Use TLS'
+    )
+    parser.add_argument(
         '-s', '--sender',
         required=True,
         action='store',
         help='Email of the sender'
     )
     parser.add_argument(
+        '-u', '--username',
+        required=False,
+        default=None,
+        action='store',
+        help='Username of the account (default: sender email)'
+    )
+    parser.add_argument(
+        '-p', '--password',
+        required=False,
+        default=None,
+        action='store',
+        help='Password of the account'
+    )
+    parser.add_argument(
         '-r', '--recipient',
-        # nargs='+',
         action='append',
         required=True,
         help='Recipient of the mail'
@@ -92,18 +118,33 @@ def parse_args():
         action='store_true',
         help=argparse.SUPPRESS
     )
+    parser.add_argument(
+        '-a', '--attachment',
+        action='append',
+        required=False,
+        type=argparse.FileType('r'),
+        help='Attachment'
+    )
     parser.add_argument('SUBJECT')
     parser.add_argument('MESSAGE')
     return parser.parse_args()
 
 def main():
     args = parse_args()
+    attachments = {}
+    if args.attachment:
+        for a in args.attachment:
+            attachments[a.name] = a.name
     send_mail(
+        smtp_server=args.smtp,
+        smtp_port=args.port,
         sender=args.sender,
+        password=args.password,
         recipient=args.recipient,
         subject=args.SUBJECT,
         message=args.MESSAGE,
-        smtp_server=args.smtp
+        attachments=attachments,
+        tls=args.tls
     )
 
 
