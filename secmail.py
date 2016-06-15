@@ -84,7 +84,6 @@ def parse_args():
     )
     parser.add_argument(
         '-r', '--recipient',
-        # nargs='+',
         action='append',
         required=True,
         help='Recipient of the mail'
@@ -102,6 +101,7 @@ def parse_args():
     )
     parser.add_argument(
         '-a', '--attachment',
+        action='append',
         required=False,
         type=argparse.FileType('r'),
         help='Attachment'
@@ -114,7 +114,8 @@ def main():
     args = parse_args()
     attachments = {}
     if args.attachment:
-        attachments[args.attachment.name] = args.attachment.name
+        for a in args.attachment:
+            attachments[a.name] = a.name
     send_mail(
         smtp_server=args.smtp,
         smtp_port=args.port,
