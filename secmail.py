@@ -100,19 +100,30 @@ def parse_args():
         action='store_true',
         help=argparse.SUPPRESS
     )
+    parser.add_argument(
+        '-a', '--attachment',
+        required=False,
+        type=argparse.FileType('r'),
+        help='Attachment'
+    )
     parser.add_argument('SUBJECT')
     parser.add_argument('MESSAGE')
     return parser.parse_args()
 
 def main():
     args = parse_args()
+    attachments = {}
+    if args.attachment:
+        attachments[args.attachment.name] = args.attachment.name
     send_mail(
+        smtp_server=args.smtp,
+        smtp_port=args.port,
         sender=args.sender,
         password=args.password,
         recipient=args.recipient,
         subject=args.SUBJECT,
         message=args.MESSAGE,
-        smtp_server=args.smtp
+        attachments=attachments
     )
 
 
