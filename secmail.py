@@ -16,8 +16,9 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
-def send_mail(sender, password, recipient, subject, message, attachments=None,
-              smtp_server='smtp.dt.ept.lu', smtp_port=25):
+def send_mail(sender, recipient, subject, message, attachments=None,
+              smtp_server='smtp.dt.ept.lu', smtp_port=25, tls=True,
+              username=None, password=None):
     logger.debug(
         'Send mail via {}:{} From: {} To: {}'.format(
             smtp_server, smtp_port, sender, recipient
@@ -47,8 +48,11 @@ def send_mail(sender, password, recipient, subject, message, attachments=None,
     logger.debug(msg)
 
     s = SMTP(smtp_server, port=smtp_port)
-    s.starttls()
-    s.login(sender, password)
+    if tls:
+        s.starttls()
+    if password:
+        user = username if username else sender
+        s.login(user, password)
     s.sendmail(sender, recipients, msg.as_string())
     s.quit()
 
@@ -71,14 +75,29 @@ def parse_args():
         help='SMTP Server Port'
     )
     parser.add_argument(
+        '--tls',
+        required=False,
+        default=True,
+        action='store_true',
+        help='Use TLS'
+    )
+    parser.add_argument(
         '-s', '--sender',
         required=True,
         action='store',
         help='Email of the sender'
     )
     parser.add_argument(
+        '-u', '--username',
+        required=False,
+        default=None,
+        action='store',
+        help='Username of the account (default: sender email)'
+    )
+    parser.add_argument(
         '-p', '--password',
-        required=True,
+        required=False,
+        default=None,
         action='store',
         help='Password of the account'
     )
@@ -124,7 +143,8 @@ def main():
         recipient=args.recipient,
         subject=args.SUBJECT,
         message=args.MESSAGE,
-        attachments=attachments
+        attachments=attachments,
+        tls=args.tls
     )
 
 
