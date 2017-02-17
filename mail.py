@@ -2,13 +2,14 @@
 # coding: utf-8
 
 
-import argparse
-import logging
 from email.mime.text import MIMEText
 from smtplib import SMTP
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEBase import MIMEBase
 from email import Encoders
+import argparse
+import logging
+import os
 import sys
 
 
@@ -41,7 +42,9 @@ def send_mail(sender, recipient, subject, message, attachments=None,
             part.set_payload(open(v, 'rb').read())
             Encoders.encode_base64(part)
             part.add_header(
-                'Content-Disposition', 'attachment; filename="{}"'.format(k)
+                'Content-Disposition', 'attachment; filename="{}"'.format(
+                    os.path.basename(k)
+                )
             )
             msg.attach(part)
 
