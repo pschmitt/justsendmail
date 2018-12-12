@@ -27,7 +27,23 @@ def send_mail(sender, recipient, subject, message, attachments=None,
     )
     msg = MIMEMultipart()
 
-    recipients = recipient if type(recipient) is list else [recipient]
+    if isinstance(recipient, list):
+        if len(recipient) > 1:
+            recipients = recipient
+        else:
+            # Comma separated recipient list
+            if ',' in recipient[0]:
+                recipients = [x.strip() for x in recipient[0].split(',')]
+            # Single recipient
+            else:
+                recipients = [recipient]
+    else:
+        # Comma separated recipient list
+        if ',' in recipient:
+            recipients = [x.strip() for x in recipient.split(',')]
+        # Single recipient
+        else:
+            recipients = [recipient]
 
     msg['Subject'] = subject
     msg['From'] = sender
