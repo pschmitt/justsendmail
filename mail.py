@@ -4,9 +4,12 @@
 
 from email.mime.text import MIMEText
 from smtplib import SMTP
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMEBase import MIMEBase
-from email import Encoders
+# from email.MIMEMultipart import MIMEMultipart
+# from email.MIMEBase import MIMEBase
+# from email import Encoders
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
 import argparse
 import logging
 import os
@@ -36,7 +39,7 @@ def send_mail(sender, recipient, subject, message, attachments=None,
                 recipients = [x.strip() for x in recipient[0].split(',')]
             # Single recipient
             else:
-                recipients = [recipient]
+                recipients = recipient
     else:
         # Comma separated recipient list
         if ',' in recipient:
@@ -53,10 +56,10 @@ def send_mail(sender, recipient, subject, message, attachments=None,
     msg.attach(body)
 
     if attachments:
-        for k, v in attachments.iteritems():
+        for k, v in attachments.items():
             part = MIMEBase('application', 'octet-stream')
             part.set_payload(open(v, 'rb').read())
-            Encoders.encode_base64(part)
+            encoders.encode_base64(part)
             part.add_header(
                 'Content-Disposition', 'attachment; filename="{}"'.format(
                     os.path.basename(k)
