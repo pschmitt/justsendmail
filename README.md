@@ -1,9 +1,9 @@
-# pymail_utils
+# Justsendmail
 
-Simple CLI tools to send mail using Python 2.7
+Simple CLI tools to send mail using Python 3+
 
 ## Usage
 
 ```
-python2 mail.py --help
+python mail.py --help
 ```
