@@ -1,6 +1,6 @@
 # Justsendmail
 
-Simple CLI tools to send mail using Python 3+
+Simple CLI tool to send mail using Python 3+
 
 ## Installation
 
