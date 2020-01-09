@@ -4,10 +4,6 @@
 
 from email.mime.text import MIMEText
 from smtplib import SMTP
-
-# from email.MIMEMultipart import MIMEMultipart
-# from email.MIMEBase import MIMEBase
-# from email import Encoders
 from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email import encoders
@@ -17,7 +13,6 @@ import os
 import sys
 
 
-logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -27,7 +22,7 @@ def send_mail(
     subject,
     message,
     attachments=None,
-    smtp_server="smtp.dt.ept.lu",
+    smtp_server="smtp.gmail.com",
     smtp_port=25,
     tls=True,
     username=None,
