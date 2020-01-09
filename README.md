@@ -2,8 +2,14 @@
 
 Simple CLI tools to send mail using Python 3+
 
+## Installation
+
+```
+pip install justsendmail
+```
+
 ## Usage
 
 ```
-python mail.py --help
+justsendmail --help
 ```
