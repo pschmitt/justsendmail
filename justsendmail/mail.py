@@ -10,24 +10,24 @@ from email import encoders
 import argparse
 import logging
 import os
-from typing import Optional, Iterable, Dict, Union, List
+import typing as t
 
 logger = logging.getLogger(__name__)
 
 
 def send_mail(
     sender: str,
-    recipient: Union[str, List[str]],
+    recipient: t.Union[str, t.List[str]],
     subject: str,
     message: str,
-    attachments: Optional[
-        Union[Dict[os.PathLike, os.PathLike], Iterable[os.PathLike]]
+    attachments: t.Optional[
+        t.Union[t.Dict[os.PathLike, os.PathLike], t.Iterable[os.PathLike]]
     ] = None,
     smtp_server: str = "smtp.gmail.com",
     smtp_port: int = 25,
-    tls: Optional[bool] = True,
-    username: Optional[str] = None,
-    password: Optional[str] = None,
+    tls: t.Optional[bool] = True,
+    username: t.Optional[str] = None,
+    password: t.Optional[str] = None,
 ) -> None:
     logger.debug(
         "Send mail via {}:{} From: {} To: {}".format(
@@ -62,29 +62,17 @@ def send_mail(
     msg.attach(body)
 
     if attachments:
-        if isinstance(attachments, dict):
-            for k, v in attachments.items():
-                part = MIMEBase("application", "octet-stream")
-                part.set_payload(open(v, "rb").read())
-                encoders.encode_base64(part)
-                part.add_header(
-                    "Content-Disposition",
-                    'attachment; filename="{}"'.format(os.path.basename(k)),
-                )
-                msg.attach(part)
-        else:
-            # Assume it's a general iterable
-            for attachment in attachments:
-                part = MIMEBase("application", "octet-stream")
-                part.set_payload(open(attachment, "rb").read())
-                encoders.encode_base64(part)
-                part.add_header(
-                    "Content-Disposition",
-                    'attachment; filename="{}"'.format(
-                        os.path.basename(attachment)
-                    ),
-                )
-                msg.attach(part)
+        if not isinstance(attachments, dict):
+            attachments = {att: att for att in attachments}
+        for k, v in attachments.items():
+            part = MIMEBase("application", "octet-stream")
+            part.set_payload(open(v, "rb").read())
+            encoders.encode_base64(part)
+            part.add_header(
+                "Content-Disposition",
+                'attachment; filename="{}"'.format(os.path.basename(k)),
+            )
+            msg.attach(part)
 
     logger.debug(msg)
 
@@ -118,18 +106,10 @@ def parse_args() -> argparse.Namespace:
         help="SMTP Server Port",
     )
     parser.add_argument(
-        "--tls",
-        required=False,
-        default=True,
-        action="store_true",
-        help="Use TLS",
+        "--tls", required=False, default=True, action="store_true", help="Use TLS",
     )
     parser.add_argument(
-        "-s",
-        "--sender",
-        required=True,
-        action="store",
-        help="Email of the sender",
+        "-s", "--sender", required=True, action="store", help="Email of the sender",
     )
     parser.add_argument(
         "-u",
@@ -155,15 +135,9 @@ def parse_args() -> argparse.Namespace:
         help="Recipient of the mail",
     )
     parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        default=False,
-        help="Verbose output",
+        "-v", "--verbose", action="store_true", default=False, help="Verbose output",
     )
-    parser.add_argument(
-        "-D", "--debug", action="store_true", help=argparse.SUPPRESS
-    )
+    parser.add_argument("-D", "--debug", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument(
         "-a",
         "--attachment",
