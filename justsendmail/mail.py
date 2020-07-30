@@ -10,17 +10,19 @@ from email import encoders
 import argparse
 import logging
 import os
-from typing import Optional, Dict
+from typing import Optional, Iterable, Dict, Union, List
 
 logger = logging.getLogger(__name__)
 
 
 def send_mail(
     sender: str,
-    recipient: str,
+    recipient: Union[str, List[str]],
     subject: str,
     message: str,
-    attachments: Optional[Dict[os.PathLike, os.PathLike]] = None,
+    attachments: Optional[
+        Union[Dict[os.PathLike, os.PathLike], Iterable[os.PathLike]]
+    ] = None,
     smtp_server: str = "smtp.gmail.com",
     smtp_port: int = 25,
     tls: Optional[bool] = True,
@@ -60,15 +62,29 @@ def send_mail(
     msg.attach(body)
 
     if attachments:
-        for k, v in attachments.items():
-            part = MIMEBase("application", "octet-stream")
-            part.set_payload(open(v, "rb").read())
-            encoders.encode_base64(part)
-            part.add_header(
-                "Content-Disposition",
-                'attachment; filename="{}"'.format(os.path.basename(k)),
-            )
-            msg.attach(part)
+        if isinstance(attachments, dict):
+            for k, v in attachments.items():
+                part = MIMEBase("application", "octet-stream")
+                part.set_payload(open(v, "rb").read())
+                encoders.encode_base64(part)
+                part.add_header(
+                    "Content-Disposition",
+                    'attachment; filename="{}"'.format(os.path.basename(k)),
+                )
+                msg.attach(part)
+        else:
+            # Assume it's a general iterable
+            for attachment in attachments:
+                part = MIMEBase("application", "octet-stream")
+                part.set_payload(open(attachment, "rb").read())
+                encoders.encode_base64(part)
+                part.add_header(
+                    "Content-Disposition",
+                    'attachment; filename="{}"'.format(
+                        os.path.basename(attachment)
+                    ),
+                )
+                msg.attach(part)
 
     logger.debug(msg)
 
