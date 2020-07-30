@@ -10,24 +10,23 @@ from email import encoders
 import argparse
 import logging
 import os
-import sys
-
+from typing import Optional, Dict
 
 logger = logging.getLogger(__name__)
 
 
 def send_mail(
-    sender,
-    recipient,
-    subject,
-    message,
-    attachments=None,
-    smtp_server="smtp.gmail.com",
-    smtp_port=25,
-    tls=True,
-    username=None,
-    password=None,
-):
+    sender: str,
+    recipient: str,
+    subject: str,
+    message: str,
+    attachments: Optional[Dict[os.PathLike, os.PathLike]] = None,
+    smtp_server: str = "smtp.gmail.com",
+    smtp_port: int = 25,
+    tls: Optional[bool] = True,
+    username: Optional[str] = None,
+    password: Optional[str] = None,
+) -> None:
     logger.debug(
         "Send mail via {}:{} From: {} To: {}".format(
             smtp_server, smtp_port, sender, recipient
@@ -83,7 +82,7 @@ def send_mail(
     s.quit()
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Process args")
     parser.add_argument(
         "-S",
@@ -162,7 +161,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
+def main() -> None:
     args = parse_args()
     attachments = {}
     if args.attachment:
