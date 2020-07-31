@@ -28,7 +28,7 @@ def send_mail(
     tls: t.Optional[bool] = True,
     username: t.Optional[str] = None,
     password: t.Optional[str] = None,
-) -> Any:
+) -> t.Any:
     logger.debug(
         "Send mail via {}:{} From: {} To: {}".format(
             smtp_server, smtp_port, sender, recipient
