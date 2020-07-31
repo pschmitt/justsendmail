@@ -10,24 +10,25 @@ from email import encoders
 import argparse
 import logging
 import os
-import sys
-
+import typing as t
 
 logger = logging.getLogger(__name__)
 
 
 def send_mail(
-    sender,
-    recipient,
-    subject,
-    message,
-    attachments=None,
-    smtp_server="smtp.gmail.com",
-    smtp_port=25,
-    tls=True,
-    username=None,
-    password=None,
-):
+    sender: str,
+    recipient: t.Union[str, t.List[str]],
+    subject: str,
+    message: str,
+    attachments: t.Optional[
+        t.Union[t.Dict[os.PathLike, os.PathLike], t.Iterable[os.PathLike]]
+    ] = None,
+    smtp_server: str = "smtp.gmail.com",
+    smtp_port: int = 25,
+    tls: t.Optional[bool] = True,
+    username: t.Optional[str] = None,
+    password: t.Optional[str] = None,
+) -> None:
     logger.debug(
         "Send mail via {}:{} From: {} To: {}".format(
             smtp_server, smtp_port, sender, recipient
@@ -61,6 +62,8 @@ def send_mail(
     msg.attach(body)
 
     if attachments:
+        if not isinstance(attachments, dict):
+            attachments = {att: att for att in attachments}
         for k, v in attachments.items():
             part = MIMEBase("application", "octet-stream")
             part.set_payload(open(v, "rb").read())
@@ -83,7 +86,7 @@ def send_mail(
     s.quit()
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Process args")
     parser.add_argument(
         "-S",
@@ -103,18 +106,10 @@ def parse_args():
         help="SMTP Server Port",
     )
     parser.add_argument(
-        "--tls",
-        required=False,
-        default=True,
-        action="store_true",
-        help="Use TLS",
+        "--tls", required=False, default=True, action="store_true", help="Use TLS",
     )
     parser.add_argument(
-        "-s",
-        "--sender",
-        required=True,
-        action="store",
-        help="Email of the sender",
+        "-s", "--sender", required=True, action="store", help="Email of the sender",
     )
     parser.add_argument(
         "-u",
@@ -140,15 +135,9 @@ def parse_args():
         help="Recipient of the mail",
     )
     parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        default=False,
-        help="Verbose output",
+        "-v", "--verbose", action="store_true", default=False, help="Verbose output",
     )
-    parser.add_argument(
-        "-D", "--debug", action="store_true", help=argparse.SUPPRESS
-    )
+    parser.add_argument("-D", "--debug", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument(
         "-a",
         "--attachment",
@@ -162,7 +151,7 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
+def main() -> None:
     args = parse_args()
     attachments = {}
     if args.attachment:
