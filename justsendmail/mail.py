@@ -28,7 +28,7 @@ def send_mail(
     tls: t.Optional[bool] = True,
     username: t.Optional[str] = None,
     password: t.Optional[str] = None,
-) -> None:
+) -> Any:
     logger.debug(
         "Send mail via {}:{} From: {} To: {}".format(
             smtp_server, smtp_port, sender, recipient
@@ -82,8 +82,12 @@ def send_mail(
     if password:
         user = username if username else sender
         s.login(user, password)
-    s.sendmail(sender, recipients, msg.as_string())
+    res = s.sendmail(sender, recipients, msg.as_string())
+    logger.debug(f"sendmail result: {res}")
     s.quit()
+    # res should be None. Unless some some recipients mailbox refused the mail
+    # See upstream doc for more information
+    return res
 
 
 def parse_args() -> argparse.Namespace:
