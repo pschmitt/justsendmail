@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="justsendmail",
-    version="1.0",
+    version="1.1",
     license="GPL3",
     description="Simple lib to send mail",
     long_description=open("README.md").read(),
