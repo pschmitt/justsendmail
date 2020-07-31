@@ -110,10 +110,18 @@ def parse_args() -> argparse.Namespace:
         help="SMTP Server Port",
     )
     parser.add_argument(
-        "--tls", required=False, default=True, action="store_true", help="Use TLS",
+        "--tls",
+        required=False,
+        default=True,
+        action="store_true",
+        help="Use TLS",
     )
     parser.add_argument(
-        "-s", "--sender", required=True, action="store", help="Email of the sender",
+        "-s",
+        "--sender",
+        required=True,
+        action="store",
+        help="Email of the sender",
     )
     parser.add_argument(
         "-u",
@@ -139,9 +147,15 @@ def parse_args() -> argparse.Namespace:
         help="Recipient of the mail",
     )
     parser.add_argument(
-        "-v", "--verbose", action="store_true", default=False, help="Verbose output",
+        "-v",
+        "--verbose",
+        action="store_true",
+        default=False,
+        help="Verbose output",
     )
-    parser.add_argument("-D", "--debug", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument(
+        "-D", "--debug", action="store_true", help=argparse.SUPPRESS
+    )
     parser.add_argument(
         "-a",
         "--attachment",
