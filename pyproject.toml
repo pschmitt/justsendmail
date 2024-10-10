@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm[toml]"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "justsendmail"
+authors = [
+  { name = "Philipp Schmitt", email = "philipp@schmitt.co" },
+]
+description = "Simple lib to send mail"
+readme = { file = "README.md", content-type = "text/markdown" }
+license = { file = "LICENSE" }
+requires-python = ">=3.7"
+dependencies = []
+version = "1.1"
+
+[project.urls]
+Homepage = "https://github.com/pschmitt/justsendmail"
+Documentation = "https://github.com/pschmitt/justsendmail/blob/HEAD/README.md"
+Repository = "https://github.com/pschmitt/justsendmail"
+Issues = "https://github.com/pschmitt/justsendmail/issues"
+
+[project.scripts]
+justsendmail = "justsendmail.mail:main"
+
+[project.optional-dependencies]
+dev = [
+  "black",
+  "pyinstaller",
+  "mypy"
+]
+
+[tool.black]
+line-length = 79
