@@ -143,7 +143,7 @@ def parse_args() -> argparse.Namespace:
         required=False,
         default=True,
         action="store_true",
-        help="Use TLS",
+        help="Use STARTTLS",
     )
     parser.add_argument(
         "-s",
