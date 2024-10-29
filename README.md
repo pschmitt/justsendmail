@@ -26,33 +26,34 @@ nix run 'git+https://github.com/pschmitt/nixos-config#justsendmail' -- --help
 
 ```
 $ justsendmail --help
-usage: justsendmail [-h] [-N] [-S SMTP] [-P PORT] [--tls] -s SENDER
-                    [-u USERNAME] [-p PASSWORD] -r RECIPIENT [-v]
-                    [-a ATTACHMENT]
-                    SUBJECT MESSAGE
+Usage: justsendmail.py [-h] [-N] [-S SMTP] [-P PORT] [--ssl] [--starttls]
+                       [--insecure] -s SENDER [-u USERNAME] [-p PASSWORD] -r
+                       RECIPIENT [-v] [-a ATTACHMENT]
+                       SUBJECT MESSAGE
 
 Process args
 
-positional arguments:
+Positional Arguments:
   SUBJECT
   MESSAGE
 
-options:
+Options:
   -h, --help            show this help message and exit
   -N, --no-autodiscovery
                         Disable autodiscovery of SMTP settings
-  -S SMTP, --smtp SMTP  SMTP Server
-  -P PORT, --port PORT  SMTP Server Port
-  --tls                 Use TLS
-  -s SENDER, --sender SENDER
-                        Email of the sender
-  -u USERNAME, --username USERNAME
+  -S, --smtp SMTP       SMTP Server
+  -P, --port PORT       SMTP Server Port
+  --ssl                 Use SSL/TLS
+  --starttls            Use STARTTLS
+  --insecure            Disable SSL/TLS certificate validation
+  -s, --sender SENDER   Email of the sender
+  -u, --username USERNAME
                         Username of the account (default: sender email)
-  -p PASSWORD, --password PASSWORD
+  -p, --password PASSWORD
                         Password of the account
-  -r RECIPIENT, --recipient RECIPIENT
+  -r, --recipient RECIPIENT
                         Recipient of the mail
   -v, --verbose         Verbose output
-  -a ATTACHMENT, --attachment ATTACHMENT
+  -a, --attachment ATTACHMENT
                         Attachment
 ```

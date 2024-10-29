@@ -37,6 +37,7 @@ def send_mail(
     smtp_port: Optional[int] = 25,
     ssl: Optional[bool] = True,
     starttls: Optional[bool] = False,
+    insecure: Optional[bool] = False,
     username: Optional[str] = None,
     password: Optional[str] = None,
     autodiscovery: bool = True,
@@ -52,8 +53,8 @@ def send_mail(
         tls = smtp_settings.get("starttls")
         ssl = not tls
     LOGGER.debug(
-        "Send mail via {}:{} (starttls: {}) From: {} To: {}".format(
-            smtp_server, smtp_port, tls, sender, recipient
+        "Send mail via {}:{} (ssl: {}, starttls: {}) From: {} To: {}".format(
+            smtp_server, smtp_port, ssl, starttls, sender, recipient
         )
     )
     msg = MIMEMultipart()
@@ -98,21 +99,29 @@ def send_mail(
 
     LOGGER.debug(msg)
 
+    ctx = ssllib.create_default_context()
+    if insecure:
+        ctx.check_hostname = False
+        ctx.verify_mode = ssllib.CERT_NONE
     s = (
         SMTP_SSL(
             smtp_server,
             port=smtp_port,
+            context=ctx,
         )
         if ssl
         else SMTP(smtp_server, port=smtp_port)
     )
+
     if starttls:
         # NOTE It might not make that much sense to do SSL, and then STARTTLS on
         # top of it.
-        s.starttls()
+        s.starttls(context=ctx)
+
     if password:
         user = username if username else sender
         s.login(user, password)
+
     res = s.sendmail(sender, recipients, msg.as_string())
     LOGGER.debug(f"sendmail result: {res}")
     s.quit()
@@ -163,6 +172,13 @@ def parse_args() -> argparse.Namespace:
         default=False,
         action="store_true",
         help="Use STARTTLS",
+    )
+    parser.add_argument(
+        "--insecure",
+        required=False,
+        default=False,
+        action="store_true",
+        help="Disable SSL/TLS certificate validation",
     )
     parser.add_argument(
         "-s",
