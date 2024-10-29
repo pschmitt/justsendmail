@@ -13,8 +13,9 @@ license = { file = "LICENSE" }
 requires-python = ">=3.7"
 dependencies = [
   "myl-discovery >= 0.5.7",
+  "rich >= 13.0.0, <14.0.0",
 ]
-version = "3.0"
+version = "3.1"
 
 [project.urls]
 Homepage = "https://github.com/pschmitt/justsendmail"
@@ -23,7 +24,7 @@ Repository = "https://github.com/pschmitt/justsendmail"
 Issues = "https://github.com/pschmitt/justsendmail/issues"
 
 [project.scripts]
-justsendmail = "justsendmail.mail:main"
+justsendmail = "justsendmail:main"
 
 [project.optional-dependencies]
 dev = [

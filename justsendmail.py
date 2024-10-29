@@ -4,7 +4,6 @@
 import argparse
 import logging
 import os
-import typing as t
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
@@ -13,8 +12,10 @@ from smtplib import SMTP
 from typing import Any, Dict, Iterable, List, Optional, Union
 
 from myldiscovery import autodiscover
+from rich.console import Console
+from rich.logging import RichHandler
 
-logger = logging.getLogger(__name__)
+LOGGER = logging.getLogger(__name__)
 
 
 class AutoDiscoveryError(Exception):
@@ -41,11 +42,11 @@ def send_mail(
         smtp_settings = settings.get("smtp")
         if not smtp_settings:
             raise AutoDiscoveryError("SMTP settings not found")
-        logger.debug("Discovered SMTP settings: {}".format(smtp_settings))
+        LOGGER.debug("Discovered SMTP settings: {}".format(smtp_settings))
         smtp_server = smtp_settings.get("server")
         smtp_port = smtp_settings.get("port")
         tls = smtp_settings.get("starttls")
-    logger.debug(
+    LOGGER.debug(
         "Send mail via {}:{} (starttls: {}) From: {} To: {}".format(
             smtp_server, smtp_port, tls, sender, recipient
         )
@@ -90,7 +91,7 @@ def send_mail(
             )
             msg.attach(part)
 
-    logger.debug(msg)
+    LOGGER.debug(msg)
 
     s = SMTP(smtp_server, port=smtp_port)
     if tls:
@@ -99,7 +100,7 @@ def send_mail(
         user = username if username else sender
         s.login(user, password)
     res = s.sendmail(sender, recipients, msg.as_string())
-    logger.debug(f"sendmail result: {res}")
+    LOGGER.debug(f"sendmail result: {res}")
     s.quit()
     # res should be None. Unless some some recipients mailbox refused the mail
     # See upstream doc for more information
@@ -194,9 +195,15 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
+    console = Console()
     args = parse_args()
-    if args.debug:
-        logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(
+        format="%(message)s",
+        handlers=[RichHandler(console=console)],
+        level=logging.DEBUG if args.debug else logging.INFO,
+    )
+    LOGGER.debug(args)
+
     attachments = {}
     if args.attachment:
         for a in args.attachment:
