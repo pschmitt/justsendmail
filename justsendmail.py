@@ -114,8 +114,8 @@ def send_mail(
     )
 
     if starttls:
-        # NOTE It might not make that much sense to do SSL, and then STARTTLS on
-        # top of it.
+        # NOTE It might not make that much sense to do SSL, and then STARTTLS
+        # on top of it.
         s.starttls(context=ctx)
 
     if password:
