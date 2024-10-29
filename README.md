@@ -16,6 +16,11 @@ pip install justsendmail
 pipx install justsendmail
 ```
 
+and there's this too 💑:
+```
+nix run 'git+https://github.com/pschmitt/nixos-config#justsendmail'
+```
+
 ## Usage
 
 ```
