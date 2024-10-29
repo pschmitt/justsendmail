@@ -4,6 +4,7 @@
 import argparse
 import logging
 import os
+import sys
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
@@ -194,12 +195,12 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def main() -> None:
+def main() -> int:
     console = Console()
     args = parse_args()
     logging.basicConfig(
         format="%(message)s",
-        handlers=[RichHandler(console=console)],
+        handlers=[RichHandler(console=console, rich_tracebacks=True)],
         level=logging.DEBUG if args.debug else logging.INFO,
     )
     LOGGER.debug(args)
@@ -208,20 +209,25 @@ def main() -> None:
     if args.attachment:
         for a in args.attachment:
             attachments[a.name] = a.name
-    send_mail(
-        autodiscovery=not args.no_autodiscovery,
-        smtp_server=args.smtp,
-        smtp_port=args.port,
-        sender=args.sender,
-        username=args.username,
-        password=args.password,
-        recipient=args.recipient,
-        subject=args.SUBJECT,
-        message=args.MESSAGE,
-        attachments=attachments,
-        tls=args.tls,
-    )
+    try:
+        send_mail(
+            autodiscovery=not args.no_autodiscovery,
+            smtp_server=args.smtp,
+            smtp_port=args.port,
+            sender=args.sender,
+            username=args.username,
+            password=args.password,
+            recipient=args.recipient,
+            subject=args.SUBJECT,
+            message=args.MESSAGE,
+            attachments=attachments,
+            tls=args.tls,
+        )
+        return 0
+    except Exception:
+        console.print_exception(show_locals=True)
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
