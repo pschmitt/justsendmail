@@ -11,10 +11,42 @@ Simple CLI tool to send mail using Python 3+
 
 ```
 pip install justsendmail
+
+# or with pipx:
+pipx install justsendmail
 ```
 
 ## Usage
 
 ```
-justsendmail --help
+$ justsendmail --help
+usage: justsendmail [-h] [-N] [-S SMTP] [-P PORT] [--tls] -s SENDER
+                    [-u USERNAME] [-p PASSWORD] -r RECIPIENT [-v]
+                    [-a ATTACHMENT]
+                    SUBJECT MESSAGE
+
+Process args
+
+positional arguments:
+  SUBJECT
+  MESSAGE
+
+options:
+  -h, --help            show this help message and exit
+  -N, --no-autodiscovery
+                        Disable autodiscovery of SMTP settings
+  -S SMTP, --smtp SMTP  SMTP Server
+  -P PORT, --port PORT  SMTP Server Port
+  --tls                 Use TLS
+  -s SENDER, --sender SENDER
+                        Email of the sender
+  -u USERNAME, --username USERNAME
+                        Username of the account (default: sender email)
+  -p PASSWORD, --password PASSWORD
+                        Password of the account
+  -r RECIPIENT, --recipient RECIPIENT
+                        Recipient of the mail
+  -v, --verbose         Verbose output
+  -a ATTACHMENT, --attachment ATTACHMENT
+                        Attachment
 ```
