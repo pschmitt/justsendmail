@@ -4,12 +4,13 @@
 import argparse
 import logging
 import os
+import ssl as ssllib
 import sys
 from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from smtplib import SMTP
+from smtplib import SMTP, SMTP_SSL
 from typing import Any, Dict, Iterable, List, Optional, Union
 
 from myldiscovery import autodiscover
@@ -34,7 +35,8 @@ def send_mail(
     ] = None,
     smtp_server: Optional[str] = "smtp.gmail.com",
     smtp_port: Optional[int] = 25,
-    tls: Optional[bool] = True,
+    ssl: Optional[bool] = True,
+    starttls: Optional[bool] = False,
     username: Optional[str] = None,
     password: Optional[str] = None,
     autodiscovery: bool = True,
@@ -48,6 +50,7 @@ def send_mail(
         smtp_server = smtp_settings.get("server")
         smtp_port = smtp_settings.get("port")
         tls = smtp_settings.get("starttls")
+        ssl = not tls
     LOGGER.debug(
         "Send mail via {}:{} (starttls: {}) From: {} To: {}".format(
             smtp_server, smtp_port, tls, sender, recipient
@@ -95,8 +98,17 @@ def send_mail(
 
     LOGGER.debug(msg)
 
-    s = SMTP(smtp_server, port=smtp_port)
-    if tls:
+    s = (
+        SMTP_SSL(
+            smtp_server,
+            port=smtp_port,
+        )
+        if ssl
+        else SMTP(smtp_server, port=smtp_port)
+    )
+    if starttls:
+        # NOTE It might not make that much sense to do SSL, and then STARTTLS on
+        # top of it.
         s.starttls()
     if password:
         user = username if username else sender
@@ -139,9 +151,16 @@ def parse_args() -> argparse.Namespace:
         help="SMTP Server Port",
     )
     parser.add_argument(
-        "--tls",
+        "--ssl",
         required=False,
         default=True,
+        action="store_true",
+        help="Use SSL/TLS",
+    )
+    parser.add_argument(
+        "--starttls",
+        required=False,
+        default=False,
         action="store_true",
         help="Use STARTTLS",
     )
@@ -224,7 +243,8 @@ def main() -> int:
             subject=args.SUBJECT,
             message=args.MESSAGE,
             attachments=attachments,
-            tls=args.tls,
+            starttls=args.starttls,
+            ssl=args.ssl,
         )
         return 0
     except Exception:
