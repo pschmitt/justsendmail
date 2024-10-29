@@ -11,7 +11,9 @@ description = "Simple lib to send mail"
 readme = { file = "README.md", content-type = "text/markdown" }
 license = { file = "LICENSE" }
 requires-python = ">=3.7"
-dependencies = []
+dependencies = [
+  "myl-discovery >= 0.5.7",
+]
 version = "2.0"
 
 [project.urls]

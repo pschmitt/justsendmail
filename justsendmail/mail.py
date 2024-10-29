@@ -1,37 +1,53 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-
-from email.mime.text import MIMEText
-from smtplib import SMTP
-from email.mime.multipart import MIMEMultipart
-from email.mime.base import MIMEBase
-from email import encoders
 import argparse
 import logging
 import os
 import typing as t
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from smtplib import SMTP
+from typing import Any, Dict, Iterable, List, Optional, Union
+
+from myldiscovery import autodiscover
 
 logger = logging.getLogger(__name__)
 
 
+class AutoDiscoveryError(Exception):
+    pass
+
+
 def send_mail(
     sender: str,
-    recipient: t.Union[str, t.List[str]],
+    recipient: Union[str, List[str]],
     subject: str,
     message: str,
-    attachments: t.Optional[
-        t.Union[t.Dict[os.PathLike, os.PathLike], t.Iterable[os.PathLike]]
+    attachments: Optional[
+        Union[Dict[os.PathLike, os.PathLike], Iterable[os.PathLike]]
     ] = None,
-    smtp_server: str = "smtp.gmail.com",
-    smtp_port: int = 25,
-    tls: t.Optional[bool] = True,
-    username: t.Optional[str] = None,
-    password: t.Optional[str] = None,
-) -> t.Any:
+    smtp_server: Optional[str] = "smtp.gmail.com",
+    smtp_port: Optional[int] = 25,
+    tls: Optional[bool] = True,
+    username: Optional[str] = None,
+    password: Optional[str] = None,
+    autodiscovery: bool = True,
+) -> Any:
+    if autodiscovery:
+        settings = autodiscover(sender, username, password)
+        smtp_settings = settings.get("smtp")
+        if not smtp_settings:
+            raise AutoDiscoveryError("SMTP settings not found")
+        logger.debug("Discovered SMTP settings: {}".format(smtp_settings))
+        smtp_server = smtp_settings.get("server")
+        smtp_port = smtp_settings.get("port")
+        tls = smtp_settings.get("starttls")
     logger.debug(
-        "Send mail via {}:{} From: {} To: {}".format(
-            smtp_server, smtp_port, sender, recipient
+        "Send mail via {}:{} (starttls: {}) From: {} To: {}".format(
+            smtp_server, smtp_port, tls, sender, recipient
         )
     )
     msg = MIMEMultipart()
@@ -93,11 +109,19 @@ def send_mail(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Process args")
     parser.add_argument(
+        "-N",
+        "--no-autodiscovery",
+        required=False,
+        action="store_true",
+        default=False,
+        help="Disable autodiscovery of SMTP settings",
+    )
+    parser.add_argument(
         "-S",
         "--smtp",
         required=False,
         action="store",
-        default="smtp.dt.ept.lu",
+        default="smtp.gmail.com",
         help="SMTP Server",
     )
     parser.add_argument(
@@ -171,11 +195,14 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
     attachments = {}
     if args.attachment:
         for a in args.attachment:
             attachments[a.name] = a.name
     send_mail(
+        autodiscovery=not args.no_autodiscovery,
         smtp_server=args.smtp,
         smtp_port=args.port,
         sender=args.sender,
