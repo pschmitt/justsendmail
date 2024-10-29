@@ -15,6 +15,7 @@ from typing import Any, Dict, Iterable, List, Optional, Union
 from myldiscovery import autodiscover
 from rich.console import Console
 from rich.logging import RichHandler
+from rich_argparse import RichHelpFormatter
 
 LOGGER = logging.getLogger(__name__)
 
@@ -109,7 +110,9 @@ def send_mail(
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Process args")
+    parser = argparse.ArgumentParser(
+        description="Process args", formatter_class=RichHelpFormatter
+    )
     parser.add_argument(
         "-N",
         "--no-autodiscovery",
