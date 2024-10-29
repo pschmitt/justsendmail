@@ -50,8 +50,8 @@ def send_mail(
         LOGGER.debug("Discovered SMTP settings: {}".format(smtp_settings))
         smtp_server = smtp_settings.get("server")
         smtp_port = smtp_settings.get("port")
-        tls = smtp_settings.get("starttls")
-        ssl = not tls
+        starttls = smtp_settings.get("starttls")
+        ssl = smtp_settings.get("ssl")
     LOGGER.debug(
         "Send mail via {}:{} (ssl: {}, starttls: {}) From: {} To: {}".format(
             smtp_server, smtp_port, ssl, starttls, sender, recipient
