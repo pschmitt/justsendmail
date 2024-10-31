@@ -3,7 +3,7 @@ requires = ["setuptools", "setuptools-scm[toml]"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "justsendmail"
+name = "sendmyl"
 authors = [
   { name = "Philipp Schmitt", email = "philipp@schmitt.co" },
 ]
@@ -24,14 +24,14 @@ version_scheme = "only-version"
 local_scheme = "no-local-version"
 
 [project.urls]
-Homepage = "https://github.com/pschmitt/justsendmail"
-Documentation = "https://github.com/pschmitt/justsendmail/blob/HEAD/README.md"
-Repository = "https://github.com/pschmitt/justsendmail"
-Issues = "https://github.com/pschmitt/justsendmail/issues"
+homepage = "https://github.com/pschmitt/sendmyl"
+documentation = "https://github.com/pschmitt/sendmyl/blob/HEAD/README.md"
+repository = "https://github.com/pschmitt/sendmyl"
+issues = "https://github.com/pschmitt/sendmyl/issues"
 
 [project.scripts]
-justsendmail = "justsendmail:main"
-sendmyl = "justsendmail:main"
+sendmyl = "sendmyl:main"
+justsendmail = "sendmyl:main" # legacy
 
 [project.optional-dependencies]
 dev = [

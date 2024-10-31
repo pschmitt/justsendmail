@@ -20,7 +20,7 @@ from rich.logging import RichHandler
 from rich_argparse import RichHelpFormatter
 
 try:
-    __version__ = version("justsendmail")
+    __version__ = version("sendmyl")
 except PackageNotFoundError:
     pass
 

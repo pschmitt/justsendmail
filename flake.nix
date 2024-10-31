@@ -43,7 +43,7 @@
 
           meta = {
             description = "Simple lib to send mail";
-            homepage = "https://github.com/pschmitt/justsendmail";
+            homepage = "https://github.com/pschmitt/sendmyl";
             license = pkgs.lib.licenses.gpl3Only;
             maintainers = with pkgs.lib.maintainers; [ pschmitt ];
             mainProgram = "sendmyl";
