@@ -91,7 +91,8 @@
       in
       {
         # pkgs
-        packages.myl = sendmyl;
+        packages.justsendmail = sendmyl;
+        packages.sendmyl = sendmyl;
         defaultPackage = sendmyl;
 
         devShells.default = devShell;
