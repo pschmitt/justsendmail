@@ -19,7 +19,7 @@ pipx install justsendmail
 and there's this too 💑:
 
 ```shell
-nix run 'git+https://github.com/pschmitt/nixos-config#justsendmail' -- --help
+nix run github:justsendmail -- --help
 ```
 
 ## Usage
