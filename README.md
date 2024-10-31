@@ -30,11 +30,10 @@ nix run github:pschmitt/sendmyl -- --help
 ## Usage
 
 ```
-$ sendmyl --help
-Usage: sendmyl.py [-h] [-N] [-S SMTP] [-P PORT] [--ssl] [--starttls]
-                       [--insecure] -s SENDER [-u USERNAME] [-p PASSWORD] -r
-                       RECIPIENT [-v] [-a ATTACHMENT]
-                       SUBJECT MESSAGE
+Usage: sendmyl [-h] [-V] [-N] [-S SMTP] [-P PORT] [--ssl] [--starttls]
+               [--insecure] -s SENDER [-u USERNAME] [-p PASSWORD] -r
+               RECIPIENT [-v] [-a ATTACHMENT]
+               SUBJECT MESSAGE
 
 Process args
 
@@ -44,6 +43,7 @@ Positional Arguments:
 
 Options:
   -h, --help            show this help message and exit
+  -V, --version         show program's version number and exit
   -N, --no-autodiscovery
                         Disable autodiscovery of SMTP settings
   -S, --smtp SMTP       SMTP Server
