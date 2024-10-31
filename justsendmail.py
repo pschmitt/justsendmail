@@ -10,6 +10,7 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from importlib.metadata import PackageNotFoundError, version
 from smtplib import SMTP, SMTP_SSL
 from typing import Any, Dict, Iterable, List, Optional, Union
 
@@ -17,6 +18,11 @@ from myldiscovery import autodiscover
 from rich.console import Console
 from rich.logging import RichHandler
 from rich_argparse import RichHelpFormatter
+
+try:
+    __version__ = version("myl")
+except PackageNotFoundError:
+    pass
 
 LOGGER = logging.getLogger(__name__)
 
@@ -133,6 +139,12 @@ def send_mail(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Process args", formatter_class=RichHelpFormatter
+    )
+    parser.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
     parser.add_argument(
         "-N",
